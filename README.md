@@ -1,6 +1,6 @@
 # Memsource Third Party App
 
-This is just quick application to showcase usage of Memsource API, so only in-memory H2 database is used. Restarting the app also deleted all saved users.
+This is just quick application to showcase usage of Memsource API, so only in-memory H2 database is used. Restarting the app also deletes all saved users.
 
 The application is using Spring security with Thymeleaf, with fully functional login and registration of users. 
 
@@ -10,7 +10,7 @@ To run the application just execute:
 
 ```./gradlew bootRun```
 
-This will start the application using gradle. The application runs by default on port `8081`. This configuration can be changed in [application.yml](../blob/master/src/main/resources/application.yml)
+This will start the application using gradle. The application runs by default on port `8081`. This configuration can be changed in [application.yml](blob/master/src/main/resources/application.yml)
 
 ## Running the application from jar
 
