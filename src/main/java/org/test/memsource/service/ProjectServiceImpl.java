@@ -3,8 +3,6 @@ package org.test.memsource.service;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProjectServiceImpl implements ProjectService {
 
-    private static final String PROJECTS_URL = "https://cloud.memsource.com/web/api2/v1/projects";
+    public static final String PROJECTS_URL = "https://cloud.memsource.com/web/api2/v1/projects";
 
     @Autowired
     private UserRepository userRepository;
@@ -28,13 +26,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public Projects getUserProjects(String username) {
         log.info("Logged user:{}", username);
         User user = userRepository.findByUsername(username);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        if (user == null) {
+            log.error("Something funky happened. We didn't find logged user into database... spooky");
+            return null;
+        }
 
         ResponseEntity<String> response = restTemplate.getForEntity(PROJECTS_URL + "?token=" + user.getToken(), String.class);
 
@@ -43,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
             log.info(projects.toString());
             return projects;
         } catch (IOException e) {
-            log.error("Bad parsing");
+            log.error("Error when parsing response for getting user projects from Memsource API", e);
             return null;
         }
     }

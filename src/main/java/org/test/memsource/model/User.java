@@ -11,13 +11,17 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity class representing registered user.
  */
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User {
 

@@ -54,6 +54,11 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities());
     }
 
+    /**
+     * Simple hack for simplicity of the application. Just one default role of user that is hardcoded here and not stored in DB.
+     *
+     * @return list of granted authorities in this case just user
+     */
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities() {
         return Stream.of(new SimpleGrantedAuthority("user")).collect(Collectors.toList());
     }

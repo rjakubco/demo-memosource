@@ -7,14 +7,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * POJO representing JSON for the token request from the Memsource API.
+ * POJO representing response for token from Memsouce API.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenRequest implements Serializable {
+public class TokenResponse implements Serializable {
 
-    private String userName;
+    private User user;
 
-    private String password;
+    private String token;
+
+    private String expires;
+
 }

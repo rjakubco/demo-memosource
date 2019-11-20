@@ -12,9 +12,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.test.memsource.dto.UserRegistrationDto;
 import org.test.memsource.entity.TokenRequest;
+import org.test.memsource.entity.TokenResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenServiceImpl implements TokenService {
 
-    private static final String TOKEN_URL = "https://cloud.memsource.com/web/api2/v1/auth/login";
+    public static final String TOKEN_URL = "https://cloud.memsource.com/web/api2/v1/auth/login";
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public String getToken(UserRegistrationDto userDto) {
@@ -34,7 +37,6 @@ public class TokenServiceImpl implements TokenService {
         tokenRequest.setUserName(userDto.getUsername());
         tokenRequest.setPassword(userDto.getPassword());
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -46,20 +48,13 @@ public class TokenServiceImpl implements TokenService {
             // TODO: need handling for timeout
             response = restTemplate.postForEntity(TOKEN_URL, request, String.class);
 
-            JsonNode root;
+            TokenResponse tokenResponse = objectMapper.readValue(response.getBody(), TokenResponse.class);
 
-            root = objectMapper.readTree(response.getBody());
-            JsonNode token = root.path("token");
-
-            if (token.isMissingNode()) {
-                throw new IllegalArgumentException("There was not token in the response from the Memsource API");
-            }
-
-            return token.asText();
+            return tokenResponse.getToken();
 
         } catch (JsonProcessingException e) {
-            log.error("Problem with parsing token request POJO");
-            throw new IllegalArgumentException("Unable to parse request for Memsource API", e);
+            log.error("Problem with parsing POJO");
+            throw new IllegalArgumentException("Unable to parse POJO", e);
         } catch (HttpClientErrorException e) {
             log.error("Error in the API call", e);
             throw new IllegalArgumentException("There was a problem when calling Memsource API", e);
