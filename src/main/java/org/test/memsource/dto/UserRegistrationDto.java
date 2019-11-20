@@ -5,7 +5,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 /**
- *
+ * Class for linking frontend and backend of the application.
  */
 @Data
 public class UserRegistrationDto {

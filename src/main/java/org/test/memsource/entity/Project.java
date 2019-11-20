@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
- *
+ * POJO representing one project from the Memsource API.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

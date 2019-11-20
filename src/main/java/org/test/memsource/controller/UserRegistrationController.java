@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 import org.test.memsource.dto.UserRegistrationDto;
 import org.test.memsource.model.User;
 import org.test.memsource.service.UserService;
 
 /**
- *
+ * REST controller for registering user.
  */
 @Controller
 @RequestMapping("/registration")
@@ -32,8 +31,10 @@ public class UserRegistrationController {
     }
 
     /**
-     * @param model
-     * @return
+     * Redirects to the registration page used in frontend.
+     *
+     * @param model model of MVC
+     * @return registration
      */
     @GetMapping
     public String showRegistrationForm(Model model) {
@@ -41,14 +42,15 @@ public class UserRegistrationController {
     }
 
     /**
-     * @param userDto
-     * @param result
-     * @param redirectAttributes
-     * @return
+     * Handles registration form for user on frontend and stores user to the database.
+     *
+     * @param userDto            object representing user filled with information from the frontend given by the user
+     * @param result             binding result for handling error cases in registration form
+     * @param redirectAttributes redirect attributes used for passing paramaters to another controller in thymeleaf
+     * @return where user is redirected based on if registration for successful or not
      */
     @PostMapping
     public String registerUserAccount(@ModelAttribute("user") @Valid UserRegistrationDto userDto, BindingResult result, RedirectAttributes redirectAttributes) {
-        RedirectView redirectView = new RedirectView();
         User existing = userService.findByUsername(userDto.getUsername());
         if (existing != null) {
             result.rejectValue("username", null, "There is already an account registered with that username");
@@ -60,12 +62,15 @@ public class UserRegistrationController {
         }
 
         if (result.hasErrors()) {
-            redirectView.setContextRelative(false);
-            redirectView.setUrl("registration");
+            return "registration";
+        }
+        try {
+            userService.save(userDto);
+        } catch (IllegalArgumentException e) {
+            result.reject("400", "Problem during registration");
             return "registration";
         }
 
-        userService.save(userDto);
         redirectAttributes.addFlashAttribute("success", true);
 
         return "redirect:login";

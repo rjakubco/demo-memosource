@@ -13,7 +13,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.test.memsource.service.UserService;
 
 /**
- *
+ * Basic web security configuration. For using Springboot login feature. Also important note is the defaultSuccessUrl()
+ * method that redirects successful logins to our project.html instead of index. Other Beans are basic beans needed for
+ * login feature to work.
  */
 @Configuration
 @EnableWebSecurity
@@ -24,14 +26,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers(
+        http.authorizeRequests().antMatchers(
                         "/registration**",
                         "/js/**",
                         "/css/**",
                         "/img/**",
-                        "/webjars/**").permitAll()
+                "/webjars/**")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll()

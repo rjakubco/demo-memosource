@@ -15,6 +15,9 @@ import org.test.memsource.dto.UserRegistrationDto;
 import org.test.memsource.model.User;
 import org.test.memsource.repository.UserRepository;
 
+/**
+ * Basic implementation of {@link UserService} interface.
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+
         user.setToken(tokenService.getToken(userDto));
         userRepository.save(user);
     }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.test.memsource.dto.UserRegistrationDto;
 import org.test.memsource.entity.TokenRequest;
@@ -27,6 +28,7 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Override
     public String getToken(UserRegistrationDto userDto) {
         TokenRequest tokenRequest = new TokenRequest();
         tokenRequest.setUserName(userDto.getUsername());
@@ -36,27 +38,35 @@ public class TokenServiceImpl implements TokenService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> request = null;
+        HttpEntity<String> request;
+        ResponseEntity<String> response = null;
         try {
-            request = new HttpEntity<String>(objectMapper.writeValueAsString(tokenRequest), headers);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            log.error("ups");
-            return null;
-        }
+            request = new HttpEntity<>(objectMapper.writeValueAsString(tokenRequest), headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(TOKEN_URL, request, String.class);
+            // TODO: need handling for timeout
+            response = restTemplate.postForEntity(TOKEN_URL, request, String.class);
 
-        JsonNode root = null;
-        try {
+            JsonNode root;
+
             root = objectMapper.readTree(response.getBody());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        JsonNode token = root.path("token");
+            JsonNode token = root.path("token");
 
-        return token.asText();
+            if (token.isMissingNode()) {
+                throw new IllegalArgumentException("There was not token in the response from the Memsource API");
+            }
+
+            return token.asText();
+
+        } catch (JsonProcessingException e) {
+            log.error("Problem with parsing token request POJO");
+            throw new IllegalArgumentException("Unable to parse request for Memsource API", e);
+        } catch (HttpClientErrorException e) {
+            log.error("Error in the API call", e);
+            throw new IllegalArgumentException("There was a problem when calling Memsource API", e);
+        } catch (IOException e) {
+            log.error("There was a problem with parsing authentication POJO response. Response status code: {} and entity: {}", response.getStatusCode(), response.getBody());
+            throw new IllegalArgumentException("Unable to parse response from Memsource API", e);
+        }
     }
 
 }

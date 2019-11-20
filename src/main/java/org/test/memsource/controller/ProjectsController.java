@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.test.memsource.service.ProjectServiceImpl;
 
 /**
- *
+ * REST controller for working with projects.
  */
 @Controller
 @RequestMapping("/projects")
@@ -20,9 +20,11 @@ public class ProjectsController {
     private ProjectServiceImpl projectService;
 
     /**
-     * @param model
-     * @param principal
-     * @return
+     * Gets all projects for the authenticated user and send them to the frontend by the model.
+     *
+     * @param model MVC model
+     * @param principal authenticated user
+     * @return redirect the projects page
      */
     @GetMapping
     public String getProjects(Model model, Principal principal) {

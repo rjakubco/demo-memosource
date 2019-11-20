@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Data;
 
 /**
- *
+ * POJO representing object returned by Memsource API for getting all projects of the user.
  */
 @Data
 public class Projects implements Serializable {

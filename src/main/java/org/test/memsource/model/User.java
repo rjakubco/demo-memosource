@@ -14,7 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 
 /**
- *
+ * Entity class representing registered user.
  */
 @Entity
 @Data
@@ -33,6 +33,9 @@ public class User {
     @Transient
     private String passwordConfirm;
 
+    /**
+     * Memsource API token for the user used for API calls to the Memsource app.
+     */
     private String token;
 
 }
