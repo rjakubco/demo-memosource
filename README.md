@@ -10,7 +10,7 @@ To run the application just execute:
 
 ```./gradlew bootRun```
 
-This will start the application using gradle. The application runs by default on port `8081`. This configuration can be changed in [application.yml](blob/master/src/main/resources/application.yml)
+This will start the application using gradle. The application runs by default on port `8081`. This configuration can be changed in [application.yml](/src/main/resources/application.yml)
 
 ## Running the application from jar
 
